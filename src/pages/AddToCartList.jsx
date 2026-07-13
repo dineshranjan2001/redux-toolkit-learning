@@ -33,7 +33,7 @@ const AddToCartList = () => {
   // };
   return (
     <>
-      <div className="grid grid-cols-1 lg:grid-cols-7 gap-8 px-5 m-10 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-7 gap-8 px-5 mx-4 my-10 items-start">
         <div className="lg:col-span-5 px-5 pt-4 rounded-2xl border border-gray-300">
           <CartList cartItems={cartItems} handleDispatch={handleDispatch} handleQuantityDispatch={handleQuantityDispatch} />
         </div>
