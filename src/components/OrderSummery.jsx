@@ -2,52 +2,65 @@ import { IndianRupee, ShieldCheck } from "lucide-react";
 import { useMemo, useState } from "react";
 import { vouchers } from "../utils/voucher";
 import { DELIVERY_FEE } from "../utils/constants";
+import {OrderComfirmModal} from "./Index";
 
 const OrderSummery = ({ cartItems }) => {
-  const [voucherName, setVoucherName] = useState('');
+  const [voucherName, setVoucherName] = useState("");
   const [appliedVoucher, setAppliedVoucher] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
 
   const deliveryFee = DELIVERY_FEE;
 
   // calculate the subtotal as per product selected
   const subTotal = useMemo(() => {
-    return cartItems?.reduce((prev, item) => 
-      prev + ((item?.price ?? 0) * (item?.quantity ?? 1)), 0) ?? 0;
+    return (
+      cartItems?.reduce(
+        (prev, item) => prev + (item?.price ?? 0) * (item?.quantity ?? 1),
+        0,
+      ) ?? 0
+    );
   }, [cartItems]);
-
 
   // calculate the discount price based on the subtotal price and vouchers
   const discount = useMemo(() => {
     const percentage = appliedVoucher?.discountPercentage ?? 0;
     return {
       discountPercentage: percentage,
-      discountPrice: (subTotal * percentage) / 100
-    }
+      discountPrice: (subTotal * percentage) / 100,
+    };
   }, [subTotal, appliedVoucher]);
-
 
   // calculate the total price
   const totalPrice = useMemo(() => {
-    return ((subTotal - discount?.discountPrice) + deliveryFee);
-  }, [subTotal, discount]);
+    return subTotal - discount?.discountPrice + deliveryFee;
+  }, [subTotal, discount, deliveryFee]);
 
-
-
+  // handle the voucher details
   const handleVoucherDetails = (e) => {
     e.preventDefault();
     const voucher = vouchers?.find(
       (voucher) =>
-        voucher?.name.toUpperCase() === voucherName.toUpperCase() && voucher?.isExpired === false,
+        voucher?.name.toUpperCase() === voucherName.toUpperCase() &&
+        voucher?.isExpired === false,
     );
 
     if (!voucher) {
-      setVoucherName('')
+      setVoucherName("");
       setAppliedVoucher(null);
       alert("Invalid Voucher or already expired.");
-
     }
-    setAppliedVoucher(voucher)
-    setVoucherName('')
+    setAppliedVoucher(voucher);
+    setVoucherName("");
+  };
+
+  // handle the checkout
+  const handleCheckout = () => {
+    if (cartItems.length === 0) {
+      alert("Your cart is empty.");
+      return;
+    }
+
+    setIsOpen(true);
   };
 
   return (
@@ -61,7 +74,6 @@ const OrderSummery = ({ cartItems }) => {
 
         {/* voucher section */}
         <div className="mt-8">
-
           <form
             onSubmit={handleVoucherDetails}
             className="grid grid-cols-6 gap-3 items-center"
@@ -97,7 +109,9 @@ const OrderSummery = ({ cartItems }) => {
             <h5 className="text-sm text-gray-500 font-medium">{`Discount(${discount?.discountPercentage}%)`}</h5>
             <div className="flex items-center">
               <IndianRupee size={15} className="pt-0.5" />
-              <h5 className="text-sm font-bold">-{discount?.discountPrice.toFixed(2)}</h5>
+              <h5 className="text-sm font-bold">
+                -{discount?.discountPrice.toFixed(2)}
+              </h5>
             </div>
           </div>
           <div className="flex justify-between">
@@ -139,11 +153,15 @@ const OrderSummery = ({ cartItems }) => {
 
         {/* checkout button section  */}
         <div className="flex justify-center items-cente px-2 pb-4 pt-10">
-          <button className="bg-black text-white font-semibold py-2 rounded-full w-full cursor-pointer active:scale-x-95 transition-all">
+          <button
+            onClick={handleCheckout}
+            className="bg-black text-white font-semibold py-2 rounded-full w-full cursor-pointer active:scale-x-95 transition-all"
+          >
             Checkout Now
           </button>
         </div>
         {/* end checkout button section  */}
+        <OrderComfirmModal isOpen={isOpen} onClose={()=>setIsOpen(false)}/>
       </div>
     </>
   );

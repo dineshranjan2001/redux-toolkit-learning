@@ -1,6 +1,10 @@
+import {OrderComfirmModal} from "../components/Index"
+
 const About = () => {
   return (
-    <div>About</div>
+    <div>
+      <OrderComfirmModal/>
+    </div>
   )
 }
 
