@@ -1,6 +1,6 @@
 import { CartCard } from "./Index";
 
-const CartList = ({ cartItems,handleDispatch }) => {
+const CartList = ({ cartItems, handleDispatch,handleQuantityDispatch }) => {
   return (
     <>
       <div className="grid grid-cols-10 pb-4 border-b border-b-gray-300">
@@ -19,7 +19,12 @@ const CartList = ({ cartItems,handleDispatch }) => {
             </h2>
           </div>
         ) : (
-          cartItems.map((item) => <CartCard key={item.id} item={item} handleDispatch={handleDispatch} />)
+          cartItems.map((item) => <CartCard
+            key={item.id}
+            item={item}
+            handleDispatch={handleDispatch}
+            handleQuantityDispatch={handleQuantityDispatch}
+          />)
         )}
       </div>
     </>
