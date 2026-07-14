@@ -5,12 +5,11 @@
   "type": "module",
   "homepage":"https://dineshranjan2001.github.io/redux-toolkit-learning",
   "scripts": {
+    "deploy":"gh-pages -d build",
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.10",
