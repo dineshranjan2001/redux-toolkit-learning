@@ -19,6 +19,11 @@ const addToCart = createSlice({
       state.itemCount = state.items.length;
       localStorage.setItem('cart', JSON.stringify(state.items));
     },
+    removeAll: (state, action) => {
+      state.items = [],
+      state.itemCount = state.items.length
+      localStorage.setItem('cart', JSON.stringify(state.items));
+    },
     increaseQuantity: (state, action) => {
       const item = state.items.find(item => item.id === action.payload?.id);
       item.quantity += 1;
@@ -31,5 +36,5 @@ const addToCart = createSlice({
     }
   },
 });
-export const { addItem, removeItem, increaseQuantity, decreaseQuantity } = addToCart.actions;
+export const { addItem, removeItem, removeAll, increaseQuantity, decreaseQuantity } = addToCart.actions;
 export default addToCart.reducer;

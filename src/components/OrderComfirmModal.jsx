@@ -1,12 +1,18 @@
 import { Button, Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { CircleCheck, IndianRupee } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { removeAll } from "../redux/slice";
+import { removeAllOrders } from "../redux/orderSlice";
 
 const OrderComfirmModal = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
-
+  const { orderItems, orderSummeries } = useSelector((state) => state?.orders);
+  const dispatch=useDispatch();
   const handleContinue = () => {
     onClose();
+    dispatch(removeAll());
+    dispatch(removeAllOrders());
     navigate("/products");
   };
 
@@ -16,7 +22,7 @@ const OrderComfirmModal = ({ isOpen, onClose }) => {
         open={isOpen}
         as="div"
         className="relative z-50 focus:outline-none"
-        onClose={()=>{}}
+        onClose={() => { }}
       >
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto bg-black/40 transition duration-300 ease-out data-closed:opacity-0" aria-hidden="true">
           <div className="flex min-h-full items-center justify-center p-4">
@@ -30,64 +36,43 @@ const OrderComfirmModal = ({ isOpen, onClose }) => {
                 className="font-medium flex justify-center items-center flex-col pt-5 "
               >
                 <CircleCheck size={80} className="text-green-500" />
-                <h4 className="text-2xl text-gray-600">
+                <span className="text-2xl text-gray-600">
                   Order Placed Successfully🎉
-                </h4>
+                </span>
               </DialogTitle>
               {/* product details */}
               <div className="flex overflow-x-auto space-x-4 snap-x snap-mandatory scrollbar-none max-w-4xl mx-auto w-full">
-                <div className="w-full shrink-0 snap-center my-4 flex justify-between items-center bg-gray-100 px-4 py-3 rounded-2xl border border-gray-200">
-                  <div className="flex gap-6 items-center">
-                    <div className="overflow-hidden rounded-2xl">
-                      <img
-                        className="w-15 h-15 object-fill rounded-2xl "
-                        src="https://images.unsplash.com/photo-1622434641406-a158123450f9?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8d2F0Y2h8ZW58MHx8MHx8fDA%3D"
-                        alt=""
-                      />
+
+                {orderItems?.map((item,index) => (
+                  <div key={index} className="w-full shrink-0 snap-center my-4 flex justify-between items-center bg-gray-100 px-4 py-3 rounded-2xl border border-gray-200">
+                    <div className="flex gap-6 items-center">
+                      <div className="overflow-hidden rounded-2xl">
+                        <img
+                          className="w-15 h-15 object-fill rounded-2xl "
+                          src={item?.orderThumbnail}
+                          alt="order-item-photo"
+                        />
+                      </div>
+                      <div>
+                        <h5 className="text-sm text-gray-600 font-medium capitalize">
+                          {item?.orderCategory}
+                        </h5>
+                        <h5 className="text-sm font-bold text-gray-800">
+                          {item?.orderTitle}
+                        </h5>
+                        <h5 className="text-sm text-gray-500 font-medium">
+                          {item?.orderBrand}
+                        </h5>
+                      </div>
                     </div>
                     <div>
-                      <h5 className="text-sm text-gray-600 font-medium">
-                        Watch
-                      </h5>
-                      <h5 className="text-sm font-bold text-gray-800">
-                        Apple Watch
-                      </h5>
-                      <h5 className="text-sm text-gray-500 font-medium">
-                        Apple
+                      <h5 className="flex items-center text-sm font-bold text-gray-800">
+                        <IndianRupee size={18} className="pt-1" />
+                        {item?.orderPrice.toFixed(2)}
                       </h5>
                     </div>
                   </div>
-                  <div>
-                    <h5 className="flex items-center text-sm font-bold text-gray-800">
-                      <IndianRupee size={18} className="pt-1" />
-                      1300000
-                    </h5>
-                  </div>
-                </div>
-                <div className="w-full shrink-0 snap-center my-4 flex justify-between items-center bg-gray-100 px-4 py-3 rounded-2xl border border-gray-200">
-                <div className="flex gap-6 items-center">
-                  <div className="overflow-hidden rounded-2xl">
-                    <img
-                      className="w-15 h-15 object-fill rounded-2xl "
-                      src="https://images.unsplash.com/photo-1622434641406-a158123450f9?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8d2F0Y2h8ZW58MHx8MHx8fDA%3D"
-                      alt=""
-                    />
-                  </div>
-                  <div>
-                    <h5 className="text-sm text-gray-600 font-medium">Watch</h5>
-                    <h5 className="text-sm font-bold text-gray-800">
-                      Apple Watch
-                    </h5>
-                    <h5 className="text-sm text-gray-500 font-medium">Apple</h5>
-                  </div>
-                </div>
-                <div>
-                  <h5 className="flex items-center text-sm font-bold text-gray-800">
-                    <IndianRupee  size={18} className="pt-1"/>
-                    1300000
-                  </h5>
-                </div>
-              </div>
+                ))}
               </div>
 
               <div className="bg-gray-100 px-4 py-3 rounded-2xl border border-gray-200">
@@ -97,36 +82,43 @@ const OrderComfirmModal = ({ isOpen, onClose }) => {
                   </h4>
                 </div>
                 <div className="py-2">
-                  <div className="flex justify-between pb-2">
-                    <span className="text-gray-500 font-medium text-sm">Order ID</span>
-                    <span className="text-gray-700 font-medium text-sm">
-                      151345678901
-                    </span>
-                  </div>
-                  <div className="flex justify-between pb-2">
-                    <span className="text-gray-500 font-medium text-sm">
-                      Shipping Address
-                    </span>
-                    <span className="text-gray-700 font-medium text-sm">
-                      Garapur, Kendrapara, Odisha, 754211
-                    </span>
-                  </div>
-                  <div className="flex justify-between pb-2">
-                    <span className="text-gray-500 font-medium text-sm">
-                      Tracking ID
-                    </span>
-                    <span className="text-gray-700 font-medium text-sm">
-                      151345678901
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-500 font-medium text-sm">
-                      Estimated Delivery Date
-                    </span>
-                    <span className="text-gray-700 font-medium text-sm">
-                      15/07/2026 12:06 pm
-                    </span>
-                  </div>
+                  {
+                    orderSummeries.map((summary,index) => (
+                      <>
+                        <div key={index} className="flex justify-between pb-2">
+                          <span className="text-gray-500 font-medium text-sm">Order ID</span>
+                          <span className="text-gray-700 font-medium text-sm">
+                            {summary?.orderId}
+                          </span>
+                        </div>
+                        <div className="flex justify-between pb-2">
+                          <span className="text-gray-500 font-medium text-sm">
+                            Shipping Address
+                          </span>
+                          <span className="text-gray-700 font-medium text-sm">
+                            {summary?.shippingAddress}
+                          </span>
+                        </div>
+                        <div className="flex justify-between pb-2">
+                          <span className="text-gray-500 font-medium text-sm">
+                            Tracking ID
+                          </span>
+                          <span className="text-gray-700 font-medium text-sm">
+                            {summary?.trackId}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-500 font-medium text-sm">
+                            Estimated Delivery Date
+                          </span>
+                          <span className="text-gray-700 font-medium text-sm">
+                            {summary?.extimateDeliveryDate}
+                          </span>
+                        </div>
+                      </>
+                    ))
+                  }
+
                 </div>
               </div>
               <div className="mt-4 flex justify-center items-center">

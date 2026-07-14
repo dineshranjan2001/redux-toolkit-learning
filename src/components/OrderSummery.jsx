@@ -1,13 +1,19 @@
 import { IndianRupee, ShieldCheck } from "lucide-react";
 import { useMemo, useState } from "react";
 import { vouchers } from "../utils/voucher";
-import { DELIVERY_FEE } from "../utils/constants";
-import {OrderComfirmModal} from "./Index";
+import { DELIVERY_FEE, formattedDate, SHIPPING_ADDRESS } from "../utils/constants";
+import { OrderComfirmModal } from "./Index";
+import { useDispatch, useSelector } from "react-redux";
+import { orderPlace } from "../redux/orderSlice";
+import { generateOrderID } from "../utils/orderidandtrackidgenerator";
 
 const OrderSummery = ({ cartItems }) => {
   const [voucherName, setVoucherName] = useState("");
   const [appliedVoucher, setAppliedVoucher] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
+  const orderSelector = useSelector((state) => state?.orders.items);
+
+  const dispatch = useDispatch();
 
   const deliveryFee = DELIVERY_FEE;
 
@@ -59,6 +65,26 @@ const OrderSummery = ({ cartItems }) => {
       alert("Your cart is empty.");
       return;
     }
+
+    // set the items into the order store of redux.
+    const productsList = cartItems.map((item) => ({
+      orderTitle: item?.title,
+      orderThumbnail: item?.thumbnail,
+      orderCategory: item?.category,
+      orderBrand: item?.brand,
+      orderPrice: item?.price
+    }));
+
+    const futureDate = new Date();
+    futureDate.setDate(futureDate.getDate() + 4);
+    const summary = {
+      orderId: generateOrderID(),
+      trackId: generateOrderID(),
+      orderDate: formattedDate(new Date()),
+      shippingAddress: SHIPPING_ADDRESS,
+      extimateDeliveryDate: formattedDate(futureDate),
+    }
+    dispatch(orderPlace({ products: productsList, summary}));
 
     setIsOpen(true);
   };
@@ -161,7 +187,7 @@ const OrderSummery = ({ cartItems }) => {
           </button>
         </div>
         {/* end checkout button section  */}
-        <OrderComfirmModal isOpen={isOpen} onClose={()=>setIsOpen(false)}/>
+        <OrderComfirmModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
       </div>
     </>
   );
